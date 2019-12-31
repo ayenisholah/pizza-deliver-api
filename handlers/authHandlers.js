@@ -1,9 +1,8 @@
 const _data = require("../lib/data");
-const helpers = require("../helpers");
+const helpers = require("../lib/helpers");
 const validator = require("../lib/validator");
 
 const authHandler = {};
-
 /**
  * User - Post
  
@@ -26,7 +25,6 @@ authHandler.login = (data, callback) => {
         if (hashedPassword == userData.hashedPassword) {
           const token = helpers.generateToken(20);
           const expires = new Date(Date.now() + 1000 * 60 * 60).toISOString();
-
           const tokenObject = {
             email,
             token,
@@ -49,3 +47,28 @@ authHandler.login = (data, callback) => {
     callback(400, { sucess: false, error: "missing require field(s)" });
   }
 };
+
+/**
+ * @method logout
+ * @memberof authHandler
+ * @description A method to help handle user logout.
+ */
+authHandler.logout = (data, callback) => {
+  const token = data.payload.token || data.headers.token;
+  if (typeof token !== "string") {
+    return callback(400, { error: "Token is not valid" });
+  }
+  _data.read("tokens", token, (err, tokenData) => {
+    if (err) {
+      return callback(400, { error: "Token is not valid" });
+    }
+    _data.delete("tokens", token, err => {
+      if (err) {
+        return callback(500, { error: "Error deleting token" });
+      }
+      return callback(204, {});
+    });
+  });
+};
+
+module.exports = authHandler;

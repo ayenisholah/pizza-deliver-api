@@ -1,5 +1,8 @@
 const userHandler = require("./userHandlers");
 const authHandler = require("./authHandlers");
+const menuHandler = require("./menuHandlers");
+
+
 
 /**
  * @func ping
@@ -19,4 +22,9 @@ const notFound = (data, callBack) => {
   callBack(404, { error: "the requested route not found" });
 };
 
-module.exports = Object.assign({ ping, notFound }, userHandler, authHandler);
+module.exports = Object.assign(
+  { ping, notFound },
+  userHandler,
+  authHandler,
+  menuHandler
+);

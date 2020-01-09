@@ -201,10 +201,7 @@ userHandler.verifyToken = (token, email, callback) => {
   _data.read("tokens", token, (err, tokenData) => {
     if (!err && tokenData) {
       // Check that the token is for the given user and has not expired
-      if (
-        tokenData.email == email &&
-        tokenData.expires > new Date(Date.now()).toISOString()
-      ) {
+      if (tokenData.email == email && tokenData.expires > Date.now()) {
         callback(true);
       } else {
         callback(false);

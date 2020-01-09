@@ -10,7 +10,7 @@ menuHandler.getMenuItems = (data, callback) => {
   _data.read("tokens", token, (err, tokenData) => {
     if (!err && tokenData) {
       // check if the token is stil valid
-      if (tokenData.expires > new Date(Date.now()).toISOString()) {
+      if (tokenData.expires > Date.now()) {
         // Proceed
         callback(200, { menu });
       } else {
@@ -32,7 +32,7 @@ menuHandler.createOrder = (data, callback) => {
   _data.read("tokens", token, (err, tokenData) => {
     if (!err && tokenData) {
       // check if the token is stil valid
-      if (tokenData.expires > new Date(Date.now()).toISOString()) {
+      if (tokenData.expires > Date.now()) {
         let { items, cardToken } = data.payload;
         cardToken = typeof cardToken != "string" ? "tok_visa" : cardToken;
         const menuIds = Object.keys(menu).map(Number);
@@ -83,10 +83,7 @@ menuHandler.verifyToken = (token, email, callback) => {
   _data.read("tokens", token, (err, tokenData) => {
     if (!err && tokenData) {
       // Check that the token is for the given user and has not expired
-      if (
-        tokenData.email == email &&
-        tokenData.expires > new Date(Date.now()).toISOString()
-      ) {
+      if (tokenData.email == email && tokenData.expires > Date.now()) {
         callback(true);
       } else {
         callback(false);

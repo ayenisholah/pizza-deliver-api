@@ -24,7 +24,7 @@ authHandler.login = (data, callback) => {
 
         if (hashedPassword == userData.hashedPassword) {
           const token = helpers.generateToken(20);
-          const expires = new Date(Date.now() + 1000 * 60 * 60).toISOString();
+          const expires = Date.now() + 1000 * 60 * 60;
           const tokenObject = {
             email,
             token,
@@ -66,7 +66,7 @@ authHandler.logout = (data, callback) => {
       if (err) {
         return callback(500, { error: "Error deleting token" });
       }
-      return callback(204, {});
+      return callback(204, { success: true, message: "Logout successful" });
     });
   });
 };

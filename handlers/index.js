@@ -1,8 +1,7 @@
 const userHandler = require("./userHandlers");
 const authHandler = require("./authHandlers");
 const menuHandler = require("./menuHandlers");
-
-
+const htmlHandler = require("./htmlHandlers");
 
 /**
  * @func ping
@@ -26,5 +25,6 @@ module.exports = Object.assign(
   { ping, notFound },
   userHandler,
   authHandler,
-  menuHandler
+  menuHandler,
+  htmlHandler
 );

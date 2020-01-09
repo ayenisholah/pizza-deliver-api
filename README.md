@@ -158,7 +158,7 @@ If you would like to set up the project locally and play-around/contribute to th
 
 #### Installation:
 
-- Clone the repository `git clone https://github.com/IAMOTZ/pizza-delivery-API.git`
+- Clone the repository `git clone https://github.com/ayenisholah/pizza-deliver-api.git`
 - Change into the root directory of the project
 - create a `config.js` file to provide all the needed configuration as specified in `config.example.js`
 - Use `node ./index.js` to start the app. Default port is `3000` && `3001` for `http` && `https` respectively.

@@ -148,3 +148,98 @@ orderHandler.addToCart = function addToCart(data, callback) {
     return acc + curr;
   }
 };
+
+// Todo send receipt when mailgun reset my password
+orderHandler.cartCheckout = (data, callback) => {
+  var token = data.headers.token;
+  if (token) {
+    _data.read("tokens", token, (err, tokenData) => {
+      if (!err && tokenData) {
+        if (tokenData.expires > Date.now()) {
+          var userEmail = tokenData.email;
+
+          _data.read("users", userEmail, function userCallback(err, userData) {
+            if (!err && userData) {
+              var cardToken =
+                typeof cardToken == "string" && cardToken.trim().length > 0
+                  ? cardToken.trim()
+                  : "tok_visa";
+
+              var cart = userData.cart;
+
+              helpers.chargeCreditCard(cardToken, cart.cartTotal, function(
+                stripeErr
+              ) {
+                if (!stripeErr) {
+                  var orderId = helpers.generateToken(10);
+                  orderId += `-${Date.now()}`;
+                  var orderObject = {
+                    orderId,
+                    email: userEmail,
+                    selctedItems: cart.selectedItems,
+                    cartTotal: cart.cartTotal
+                  };
+                  _data.create(
+                    "orders",
+                    orderId,
+                    orderObject,
+                    function createOrder(err) {
+                      if (!err && orderObject) {
+                        delete userData.cart;
+                        _data.update(
+                          "users",
+                          userEmail,
+                          userData,
+                          function updateUser(err) {
+                            if (!err) {
+                              callback(200, {
+                                success: true,
+                                message: "order created successfully"
+                              });
+                            } else {
+                              callback(500, {
+                                success: false,
+                                error: "could not clear user  cart"
+                              });
+                            }
+                          }
+                        );
+                        // send receipt
+                      } else {
+                        callback(500, {
+                          success: false,
+                          error: "could not create order"
+                        });
+                      }
+                    }
+                  );
+                } else {
+                  callback(400, {
+                    success: false,
+                    error: "error could not charge credit card"
+                  });
+                }
+              });
+            } else {
+              callback(404, {
+                success: false,
+                error: "could not find the specied user"
+              });
+            }
+          });
+        } else {
+          callback(403, {
+            success: false,
+            error: "token expired, please create another session"
+          });
+        }
+      } else {
+        callback(400, { success: false, error: "invalid token" });
+      }
+    });
+  } else {
+    callback(403, { success: false, error: "Missing token" });
+  }
+};
+
+module.exports = orderHandler;
